@@ -8,6 +8,7 @@ import {
 	SkeletonBodyText,
 } from '@shopify/polaris';
 import EmailEditor from 'react-email-editor';
+import { useAppQuery } from '../hooks';
 
 export default function HomePage() {
 	/*
@@ -20,12 +21,12 @@ export default function HomePage() {
 	/*
     These are mock values. Setting these values lets you preview the loading markup and the empty state.
   */
-	const isLoading = false;
-	const isRefetching = false;
+	const loading = false;
+	const refetching = false;
 	const Templates = [];
 
 	/* loadingMarkup uses the loading component from AppBridge and components from Polaris  */
-	const loadingMarkup = isLoading ? (
+	const loadingMarkup = loading ? (
 		<Card sectioned>
 			<Loading />
 			<SkeletonBodyText />
@@ -34,7 +35,7 @@ export default function HomePage() {
 
 	/* Use Polaris Card and EmptyState components to define the contents of the empty state */
 	const emptyStateMarkup =
-		!isLoading && !Templates?.length ? (
+		!loading && !Templates?.length ? (
 			<Card sectioned>
 				<EmptyState
 					heading='Create emails'
@@ -56,12 +57,17 @@ export default function HomePage() {
   */
 	const emailEditorRef = useRef(null);
 
-	const exportHtml = () => {
-		emailEditorRef.current.editor.exportHtml((data) => {
-			const { design, html } = data;
-			console.log('exportHtml', html);
-		});
-	};
+	const {
+		data: templates,
+		isLoading,
+		isRefetching,
+	} = useAppQuery({
+		url: `/api/template/save`,
+		reactQueryOptions: {
+			/* Disable refetching because the QRCodeForm component ignores changes to its props */
+			refetchOnReconnect: false,
+		},
+	});
 
 	const onLoad = () => {
 		// editor instance is created
@@ -74,6 +80,12 @@ export default function HomePage() {
 		// editor is ready
 		console.log('onReady');
 	};
+
+	if (isLoading) {
+		return <div>loading</div>;
+	}
+
+	console.log(templates);
 
 	return (
 		<Page>

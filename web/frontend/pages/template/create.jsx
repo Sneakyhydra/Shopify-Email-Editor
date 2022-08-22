@@ -8,7 +8,7 @@ export default function ManageCode() {
 	return (
 		<Page>
 			<TitleBar
-				title='Create new QR code'
+				title='Create Template'
 				breadcrumbs={breadcrumbs}
 				primaryAction={null}
 			/>
