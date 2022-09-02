@@ -1,10 +1,5 @@
-// @ts-check
-import { join } from 'path';
-import fs from 'fs';
-import express from 'express';
-import cookieParser from 'cookie-parser';
+// Shopify Imports
 import { Shopify, LATEST_API_VERSION } from '@shopify/shopify-api';
-
 import applyAuthMiddleware from './middleware/auth.js';
 import verifyRequest from './middleware/verify-request.js';
 import { setupGDPRWebHooks } from './gdpr.js';
@@ -12,11 +7,20 @@ import productCreator from './helpers/product-creator.js';
 import { BillingInterval } from './helpers/ensure-billing.js';
 import { AppInstallations } from './app_installations.js';
 
+// Server Imports
+import * as dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
+import cookieParser from 'cookie-parser';
+
+// Other Imports
+import fs from 'fs';
+import { join } from 'path';
+
+// Routes
 import templateRouter from './routes/template.js';
 
-/**
- * Database
- */
+// Initialize connection to database
 import connectDB from './config/db.js';
 connectDB();
 
@@ -109,45 +113,12 @@ export async function createServer(
 		})
 	);
 
-	app.get('/api/products/count', async (req, res) => {
-		const session = await Shopify.Utils.loadCurrentSession(
-			req,
-			res,
-			app.get('use-online-tokens')
-		);
-		const { Product } = await import(
-			`@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
-		);
-
-		const countData = await Product.count({ session });
-		res.status(200).send(countData);
-	});
-
-	app.get('/api/products/create', async (req, res) => {
-		const session = await Shopify.Utils.loadCurrentSession(
-			req,
-			res,
-			app.get('use-online-tokens')
-		);
-		let status = 200;
-		let error = null;
-
-		try {
-			await productCreator(session);
-		} catch (e) {
-			console.log(`Failed to process products/create: ${e.message}`);
-			status = 500;
-			error = e.message;
-		}
-		res.status(status).send({ success: status === 200, error });
-	});
-
 	// All endpoints after this point will have access to a request.body
 	// attribute, as a result of the express.json() middleware
 	app.use(express.json());
 
 	app.use((req, res, next) => {
-		const shop = Shopify.Utils.sanitizeShop(req.query.shop);
+		const shop = Shopify.Utils.sanitizeShop('email-editor-assignment.myshopify.com');
 		if (Shopify.Context.IS_EMBEDDED_APP && shop) {
 			res.setHeader(
 				'Content-Security-Policy',
@@ -161,6 +132,7 @@ export async function createServer(
 		next();
 	});
 
+	// Routes
 	app.use('/api/template', templateRouter);
 
 	if (isProd) {

@@ -1,11 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 import Routes from './Routes';
 
-import {
-	AppBridgeProvider,
-	QueryProvider,
-	PolarisProvider,
-} from './components';
+import { QueryProvider, PolarisProvider } from './components';
 
 export default function App() {
 	// Any .tsx or .jsx files in /pages will become a route

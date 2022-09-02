@@ -13,13 +13,12 @@ const templateRouter = express.Router();
 /** Endpoints **\
  * Save Template
  * Get Templates
- * Get Template
+ * Load Template
  */
 
 /**
  * @route   POST api/template/save
  * @desc    Save Template
- * @access  Public
  */
 templateRouter.post(
 	'/save',
@@ -36,11 +35,12 @@ templateRouter.post(
 			return res.status(400).send({ errors: errors.array() });
 		}
 
-		// Destructure request body
-		const { body, counters, schemaVersion } = req.body;
-
-		const templateId = body.id;
 		try {
+			// Destructure request body
+			const { body, counters, schemaVersion } = req.body;
+			const templateId = body.id;
+
+			// Remove old template if it exists
 			await Template.remove({ templateId });
 
 			const newTemplate = new Template({
@@ -50,9 +50,8 @@ templateRouter.post(
 				schemaVersion,
 			});
 
+			// Save new template
 			await newTemplate.save();
-
-			console.log('saved');
 
 			// Send success message to client
 			return res.send('Saved');
@@ -66,13 +65,11 @@ templateRouter.post(
 /**
  * @route   GET api/template/save
  * @desc    Get saved templates
- * @access  Public
  */
 templateRouter.get('/save', async (req, res) => {
 	try {
-		// Find user by id
-		const templates = await Template.find();
-		console.log(templates);
+		// Find template by id
+		const templates = await Template.find({}, { templateId: 1 });
 		return res.send(templates);
 	} catch (err) {
 		// Return error
@@ -82,8 +79,7 @@ templateRouter.get('/save', async (req, res) => {
 
 /**
  * @route   GET api/template/load/{id}
- * @desc    Get saved template
- * @access  Public
+ * @desc    Load saved template
  */
 templateRouter.get('/load/:id', async (req, res) => {
 	const templateId = req.params.id;

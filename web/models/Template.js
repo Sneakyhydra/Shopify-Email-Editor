@@ -1,11 +1,7 @@
-/**
- * Imports
- */
+// Imports
 import mongoose from 'mongoose';
 
-/**
- * Schema
- */
+// Schema
 const TemplateSchema = new mongoose.Schema({
 	templateId: String,
 	body: {

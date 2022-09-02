@@ -1,3 +1,4 @@
+// Imports
 import { useRef } from 'react';
 import EmailEditor from 'react-email-editor';
 import axios from 'axios';
@@ -18,17 +19,12 @@ export const TemplateForm = ({ templateId }) => {
 					params: { shop: 'email-editor-assignment.myshopify.com' },
 				};
 
-				const res = await axios.post('/api/template/save', design, config);
-				console.log('saving template');
+				await axios.post('/api/template/save', design, config);
 			}
 		});
 	};
 
 	const onLoad = async () => {
-		// editor instance is created
-		// you can load your template here;
-		// const templateJson = {};
-		// emailEditorRef.current.editor.loadDesign(templateJson);
 		if (templateId) {
 			const config = {
 				params: { shop: 'email-editor-assignment.myshopify.com' },
@@ -41,7 +37,7 @@ export const TemplateForm = ({ templateId }) => {
 
 	const onReady = () => {
 		// editor is ready
-		console.log('onReady');
+		console.log('Editor is ready');
 	};
 
 	return (
