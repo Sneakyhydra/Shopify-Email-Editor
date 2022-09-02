@@ -5,6 +5,7 @@ import {
 	Layout,
 	Page,
 	SkeletonBodyText,
+	Button,
 } from '@shopify/polaris';
 
 import { useNavigate } from 'react-router';
@@ -27,6 +28,10 @@ export default function HomePage() {
 		loadTemplates();
 	}, []);
 
+	const handleClick = (template) => {
+		navigate(`/template/${template.templateId}`);
+	};
+
 	/* loadingMarkup uses the loading component from AppBridge and components from Polaris  */
 	const loadingMarkup =
 		templates.length === 0 ? (
@@ -37,7 +42,7 @@ export default function HomePage() {
 
 	/* Use Polaris Card and EmptyState components to define the contents of the empty state */
 	const emptyStateMarkup =
-		templates.length !== 0 ? (
+		templates.length === 0 ? (
 			<Card sectioned>
 				<EmptyState
 					heading='Create emails'
@@ -58,6 +63,26 @@ export default function HomePage() {
     and include the empty state contents set above.
   */
 
+	const notEmpty =
+		templates.length > 0 ? (
+			<div>
+				<Button onClick={() => navigate('/template/create')}>
+					Create Template
+				</Button>
+				<Card sectioned>
+					{templates.map((template) => {
+						return (
+							<Card.Section key={template._id}>
+								<Button onClick={() => handleClick(template)}>
+									{template.templateId}
+								</Button>
+							</Card.Section>
+						);
+					})}
+				</Card>
+			</div>
+		) : null;
+
 	if (templates.length === 0) {
 		return <div>loading</div>;
 	}
@@ -70,6 +95,7 @@ export default function HomePage() {
 				<Layout.Section>
 					{loadingMarkup}
 					{emptyStateMarkup}
+					{notEmpty}
 				</Layout.Section>
 			</Layout>
 		</Page>

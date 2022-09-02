@@ -12,6 +12,8 @@ const templateRouter = express.Router();
 
 /** Endpoints **\
  * Save Template
+ * Get Templates
+ * Get Template
  */
 
 /**
@@ -72,6 +74,23 @@ templateRouter.get('/save', async (req, res) => {
 		const templates = await Template.find();
 		console.log(templates);
 		return res.send(templates);
+	} catch (err) {
+		// Return error
+		return res.status(500).send({ errors: [{ msg: err.message }] });
+	}
+});
+
+/**
+ * @route   GET api/template/load/{id}
+ * @desc    Get saved template
+ * @access  Public
+ */
+templateRouter.get('/load/:id', async (req, res) => {
+	const templateId = req.params.id;
+	try {
+		// Find template by id
+		const template = await Template.findOne({ templateId });
+		return res.send(template);
 	} catch (err) {
 		// Return error
 		return res.status(500).send({ errors: [{ msg: err.message }] });
