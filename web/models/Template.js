@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
  * Schema
  */
 const TemplateSchema = new mongoose.Schema({
+	templateId: String,
 	body: {
 		type: Object,
 		required: true,

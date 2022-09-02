@@ -38,7 +38,7 @@ Shopify.Context.initialize({
 	HOST_NAME: process.env.HOST.replace(/https?:\/\//, ''),
 	HOST_SCHEME: process.env.HOST.split('://')[0],
 	API_VERSION: LATEST_API_VERSION,
-	IS_EMBEDDED_APP: true,
+	IS_EMBEDDED_APP: false,
 	// This should be replaced with your preferred storage strategy
 	SESSION_STORAGE: new Shopify.Session.SQLiteSessionStorage(DB_PATH),
 });
@@ -175,7 +175,9 @@ export async function createServer(
 	}
 
 	app.use('/*', async (req, res, next) => {
-		const shop = Shopify.Utils.sanitizeShop(req.query.shop);
+		const shop = Shopify.Utils.sanitizeShop(
+			'email-editor-assignment.myshopify.com'
+		);
 		if (!shop) {
 			res.status(500);
 			return res.send('No shop provided');

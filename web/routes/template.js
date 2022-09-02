@@ -2,7 +2,6 @@
  * Imports
  */
 import express from 'express';
-import config from 'config';
 import { check, validationResult } from 'express-validator';
 import Template from '../models/Template.js';
 
@@ -38,14 +37,19 @@ templateRouter.post(
 		// Destructure request body
 		const { body, counters, schemaVersion } = req.body;
 
+		const templateId = body.id;
 		try {
+			await Template.remove({ templateId });
+
 			const newTemplate = new Template({
+				templateId,
 				body,
 				counters,
 				schemaVersion,
 			});
 
 			await newTemplate.save();
+
 			console.log('saved');
 
 			// Send success message to client

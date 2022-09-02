@@ -1,5 +1,4 @@
-import { useRef } from 'react';
-import { useNavigate, TitleBar, Loading } from '@shopify/app-bridge-react';
+import { useEffect, useState } from 'react';
 import {
 	Card,
 	EmptyState,
@@ -7,35 +6,38 @@ import {
 	Page,
 	SkeletonBodyText,
 } from '@shopify/polaris';
-import EmailEditor from 'react-email-editor';
-import { useAppQuery } from '../hooks';
+
+import { useNavigate } from 'react-router';
+import axios from 'axios';
 
 export default function HomePage() {
 	/*
-    Add an App Bridge useNavigate hook to set up the navigate function.
-    This function modifies the top-level browser URL so that you can
-    navigate within the embedded app and keep the browser in sync on reload.
-  */
-	const navigate = useNavigate();
-
-	/*
     These are mock values. Setting these values lets you preview the loading markup and the empty state.
   */
-	const loading = false;
-	const refetching = false;
-	const Templates = [];
+	const navigate = useNavigate();
+	const [templates, setTemplates] = useState([]);
+
+	useEffect(() => {
+		const loadTemplates = async () => {
+			const res = await axios.get('/api/template/save', {
+				params: { shop: 'email-editor-assignment.myshopify.com' },
+			});
+			setTemplates(res.data);
+		};
+		loadTemplates();
+	}, []);
 
 	/* loadingMarkup uses the loading component from AppBridge and components from Polaris  */
-	const loadingMarkup = loading ? (
-		<Card sectioned>
-			<Loading />
-			<SkeletonBodyText />
-		</Card>
-	) : null;
+	const loadingMarkup =
+		templates.length === 0 ? (
+			<Card sectioned>
+				<SkeletonBodyText />
+			</Card>
+		) : null;
 
 	/* Use Polaris Card and EmptyState components to define the contents of the empty state */
 	const emptyStateMarkup =
-		!loading && !Templates?.length ? (
+		templates.length !== 0 ? (
 			<Card sectioned>
 				<EmptyState
 					heading='Create emails'
@@ -55,33 +57,8 @@ export default function HomePage() {
     Use Polaris Page and TitleBar components to create the page layout,
     and include the empty state contents set above.
   */
-	const emailEditorRef = useRef(null);
 
-	const {
-		data: templates,
-		isLoading,
-		isRefetching,
-	} = useAppQuery({
-		url: `/api/template/save`,
-		reactQueryOptions: {
-			/* Disable refetching because the QRCodeForm component ignores changes to its props */
-			refetchOnReconnect: false,
-		},
-	});
-
-	const onLoad = () => {
-		// editor instance is created
-		// you can load your template here;
-		// const templateJson = {};
-		// emailEditorRef.current.editor.loadDesign(templateJson);
-	};
-
-	const onReady = () => {
-		// editor is ready
-		console.log('onReady');
-	};
-
-	if (isLoading) {
+	if (templates.length === 0) {
 		return <div>loading</div>;
 	}
 
@@ -89,13 +66,6 @@ export default function HomePage() {
 
 	return (
 		<Page>
-			<TitleBar
-				title='Templates'
-				primaryAction={{
-					content: 'Create Template',
-					onAction: () => navigate('/template/create'),
-				}}
-			/>
 			<Layout>
 				<Layout.Section>
 					{loadingMarkup}

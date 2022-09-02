@@ -15,11 +15,9 @@ export default function App() {
 	return (
 		<PolarisProvider>
 			<BrowserRouter>
-				<AppBridgeProvider>
-					<QueryProvider>
-						<Routes pages={pages} />
-					</QueryProvider>
-				</AppBridgeProvider>
+				<QueryProvider>
+					<Routes pages={pages} />
+				</QueryProvider>
 			</BrowserRouter>
 		</PolarisProvider>
 	);

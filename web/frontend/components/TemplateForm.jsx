@@ -1,15 +1,24 @@
 import { useRef } from 'react';
 import EmailEditor from 'react-email-editor';
+import axios from 'axios';
 
 export const TemplateForm = (props) => {
 	const emailEditorRef = useRef(null);
 
 	const exportData = async (Html, Json, save) => {
-		emailEditorRef.current.editor.exportHtml((data) => {
+		emailEditorRef.current.editor.exportHtml(async (data) => {
 			const { design, html } = data;
 			if (Html) console.log('exportHtml', html);
 			if (Json) console.log('exportJson', design);
 			if (save) {
+				const config = {
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					params: { shop: 'email-editor-assignment.myshopify.com' },
+				};
+
+				const res = await axios.post('/api/template/save', design, config);
 				console.log('saving template');
 			}
 		});
