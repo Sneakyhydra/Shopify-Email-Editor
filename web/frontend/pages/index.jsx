@@ -56,6 +56,7 @@ export default function HomePage() {
 		return <div>loading</div>;
 	}
 
+	console.log(templates);
 	const notEmpty =
 		templates.length > 0 ? (
 			<div>
