@@ -12,6 +12,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 // Other Imports
 import fs from 'fs';
@@ -84,6 +85,7 @@ export async function createServer(
 	app.set('use-online-tokens', USE_ONLINE_TOKENS);
 
 	app.use(cookieParser(Shopify.Context.API_SECRET_KEY));
+	app.use(cors());
 
 	applyAuthMiddleware(app, {
 		billing: billingSettings,

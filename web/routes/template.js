@@ -41,7 +41,7 @@ templateRouter.post(
 			const templateId = body.id;
 
 			// Remove old template if it exists
-			await Template.remove({ templateId });
+			await Template.deleteOne({ templateId });
 
 			const newTemplate = new Template({
 				templateId,
